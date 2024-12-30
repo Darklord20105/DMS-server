@@ -26,11 +26,11 @@ function mergeNewDebtItemToArray(input, newObj) {
     let originalData = input.debtList;
     let newData = [...originalData, newObj];
     input.debtList = newData;
-    let x = newData.reduce(function(acc, obj) {
-        return acc + obj.totalValue;
+    let x = newData.reduce(function (acc, obj) {
+        return Number(acc) + Number(obj.totalValue);
     }, 0);
-    input.totalDebt = x.toFixed(2);
-    input.overallValue = input.totalDebt - input.totalPayment
+    input.totalDebt = Number(x).toFixed(2);
+    input.overallValue = (input.totalDebt - input.totalPayment).toFixed(2)
     return input;
 }
 
@@ -40,18 +40,18 @@ function deleteDebtItemFromArray(input, objId) {
     let newData = originalData.filter((item) => item["_id"] != objId);
     console.log(newData.length);
     input.debtList = newData;
-    let x = newData.reduce(function(acc, obj) {
-        return acc + obj.totalValue;
+    let x = newData.reduce(function (acc, obj) {
+        return Number(acc) + Number(obj.totalValue);
     }, 0);
-    input.totalDebt = x.toFixed(2);
+    input.totalDebt = Number(x).toFixed(2);
     console.log(input);
-    input.overallValue = input.totalDebt - input.totalPayment
+    input.overallValue = (input.totalDebt - input.totalPayment).toFixed(2)
     return input;
 }
 
 exports.debt_post_new = (req, res) => {
     const {
-	id,
+        id,
         description,
         amount,
         unitPrice
@@ -60,7 +60,7 @@ exports.debt_post_new = (req, res) => {
     let totalValue = (amount * unitPrice).toFixed(2);
 
     let newDebt = {
-	description: description,
+        description: description,
         amount: Number(amount),
         unitPrice: Number(unitPrice),
         totalValue: Number(totalValue),
@@ -72,7 +72,7 @@ exports.debt_post_new = (req, res) => {
                 res.status(404).send({
                     message: "couldn't found a User with id " + id
                 });
-	    console.log('assuming we find a us4er he is ')
+            console.log('assuming we find a us4er he is ')
             mergeNewDebtItemToArray(data, newDebt);
             //console.log(data, 'before saving to db')
 
@@ -100,7 +100,6 @@ exports.debt_delete_item = (req, res) => {
         userID,
         debtID
     } = req.query;
-    
 
     User.findById(userID)
         .then((data) => {
@@ -113,5 +112,5 @@ exports.debt_delete_item = (req, res) => {
                 .catch((err) => console.log(err));
         })
         .catch((err) => console.log("Error occured, " + err));
-	
+
 };
